@@ -73,11 +73,6 @@
             <!-- 1. Payment Tab (QR Scanner Simulation) -->
             <section id="payment" class="tab-content">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Maintenance Fee Payment</h2>
-                
-                <div id="payment-status" class="hidden p-4 rounded-lg text-lg mb-6 text-green-700 bg-green-100 border-l-4 border-green-500" role="alert">
-                    <p class="font-medium">✅ Payment Success!</p>
-                    <p class="text-sm mt-1">Maintenance fee successfully processed. A confirmation SMS/Email has been sent.</p>
-                </div>
 
                 <div class="flex flex-col items-center p-8 bg-gray-50 rounded-lg border border-gray-200">
                     <div class="w-48 h-48 bg-gray-200 rounded-lg flex items-center justify-center mb-6 shadow-inner border border-gray-300">
@@ -85,14 +80,8 @@
                     </div>
                     
                     <p class="text-center text-gray-600 mb-6">
-                        Click below to open your camera and scan the official society QR code for maintenance fee payment.
+                        Scan the above QR code for maintenance fee payment.
                     </p>
-                    
-                    <button onclick="simulateQrScan()" 
-                            class="flex items-center justify-center px-6 py-3 bg-primary text-white font-medium text-lg rounded-xl shadow-lg hover:bg-green-600 transition duration-200 ease-in-out transform hover:scale-[1.02] active:scale-95 focus:outline-none focus:ring-4 focus:ring-green-300">
-                        <i data-lucide="camera" class="w-6 h-6 mr-3"></i>
-                        Scan QR & Pay Now
-                    </button>
                 </div>
             </section>
 
@@ -115,7 +104,7 @@
                     <button type="submit" 
                             class="flex items-center justify-center w-full px-6 py-3 bg-secondary text-white font-medium text-lg rounded-xl shadow-lg hover:bg-orange-600 transition duration-200 ease-in-out transform hover:scale-[1.01] active:scale-95 focus:outline-none focus:ring-4 focus:ring-orange-300">
                         <i data-lucide="whatsapp" class="w-6 h-6 mr-3 fill-white stroke-white"></i>
-                        Submit & Open WhatsApp
+                        Submit/WhatsApp
                     </button>
 
                     <div id="suggestion-status" class="hidden p-4 rounded-lg text-base text-blue-700 bg-blue-100 border-l-4 border-blue-500" role="alert">
@@ -176,29 +165,7 @@
             // Activate the selected tab button
             document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active');
         }
-
-        /**
-         * Simulates a QR scan and payment process.
-         */
-        function simulateQrScan() {
-            const statusBox = document.getElementById('payment-status');
-            
-            // 1. Show processing message (optional)
-            // statusBox.innerHTML = '<p class="font-medium">⏳ Processing Payment...</p>';
-            // statusBox.classList.remove('hidden', 'bg-green-100', 'border-green-500', 'text-green-700');
-            // statusBox.classList.add('bg-blue-100', 'border-blue-500', 'text-blue-700');
-
-            // 2. Simulate success after a brief delay
-            setTimeout(() => {
-                statusBox.innerHTML = '<p class="font-medium">✅ Payment Success!</p><p class="text-sm mt-1">Maintenance fee successfully processed. A confirmation SMS/Email has been sent.</p>';
-                
-                // Ensure it is styled as success
-                statusBox.classList.remove('hidden', 'bg-blue-100', 'border-blue-500', 'text-blue-700');
-                statusBox.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
-            }, 100); // Quick simulation
-        }
-
-        /**
+         /**
          * Generates the WhatsApp link with the suggestion text and opens it.
          * @param {Event} event The form submission event.
          */
@@ -218,7 +185,7 @@
             }
             
             // Template message for the WhatsApp link
-            const template = `Suggestion from Resident:\n\n---\n${suggestion}\n---`;
+            const template = `Suggestion from Resident:\n\n****\n${suggestion}\n****`;
             
             // Encode the message for use in a URL
             const encodedMessage = encodeURIComponent(template);
@@ -247,3 +214,4 @@
     </script>
 </body>
 </html>
+
