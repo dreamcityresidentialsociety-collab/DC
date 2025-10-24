@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Society Resident Portal</title>
+    <!-- Load Tailwind CSS for utility classes -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide icons for a modern look -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom styles for Inter font and general body look */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fafc; /* Light gray background */
+        }
+        /* Style for active tab button */
+        .tab-button.active {
+            border-bottom: 3px solid #9210b9; /* Emerald 500 */
+            color: #9210b9;
+            font-weight: 600;
+        }
+        /* Style the main container shadow and border */
+        .app-container {
+            min-height: 85vh;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#9210b9', // Emerald 500
+                        'secondary': '#f97316', // Orange 500
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="p-4 md:p-8 flex items-center justify-center">
+
+    <div id="app" class="w-full max-w-4xl bg-white shadow-2xl rounded-xl app-container overflow-hidden">
+        
+        <!-- Header -->
+        <header class="p-6 bg-primary text-white rounded-t-xl">
+            <h1 class="text-3xl font-bold tracking-tight">Dream City Residential Portal</h1>
+            <p class="text-sm opacity-90 mt-1">Your one-stop app for society management.</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="flex border-b border-gray-200 sticky top-0 bg-white z-10">
+            <button class="tab-button flex-1 py-4 text-center text-gray-600 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none" 
+                    data-tab="payment" onclick="showTab('payment')">
+                <i data-lucide="scan" class="inline-block w-5 h-5 mr-2 -mt-1"></i>
+                Maintenance Payment
+            </button>
+            <button class="tab-button flex-1 py-4 text-center text-gray-600 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none" 
+                    data-tab="suggestion" onclick="showTab('suggestion')">
+                <i data-lucide="send" class="inline-block w-5 h-5 mr-2 -mt-1"></i>
+                Suggestion Box
+            </button>
+            <button class="tab-button flex-1 py-4 text-center text-gray-600 transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none" 
+                    data-tab="map" onclick="showTab('map')">
+                <i data-lucide="map" class="inline-block w-5 h-5 mr-2 -mt-1"></i>
+                Society Map
+            </button>
+        </nav>
+
+        <!-- Tab Content -->
+        <main class="p-6 md:p-10">
+
+            <!-- 1. Payment Tab (QR Scanner Simulation) -->
+            <section id="payment" class="tab-content">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Maintenance Fee Payment</h2>
+                
+                <div id="payment-status" class="hidden p-4 rounded-lg text-lg mb-6 text-green-700 bg-green-100 border-l-4 border-green-500" role="alert">
+                    <p class="font-medium">✅ Payment Success!</p>
+                    <p class="text-sm mt-1">Maintenance fee successfully processed. A confirmation SMS/Email has been sent.</p>
+                </div>
+
+                <div class="flex flex-col items-center p-8 bg-gray-50 rounded-lg border border-gray-200">
+                    <div class="w-48 h-48 bg-gray-200 rounded-lg flex items-center justify-center mb-6 shadow-inner border border-gray-300">
+                        <i data-lucide="qr-code" class="w-24 h-24 text-gray-400"></i>
+                    </div>
+                    
+                    <p class="text-center text-gray-600 mb-6">
+                        Click below to open your camera and scan the official society QR code for maintenance fee payment.
+                    </p>
+                    
+                    <button onclick="simulateQrScan()" 
+                            class="flex items-center justify-center px-6 py-3 bg-primary text-white font-medium text-lg rounded-xl shadow-lg hover:bg-green-600 transition duration-200 ease-in-out transform hover:scale-[1.02] active:scale-95 focus:outline-none focus:ring-4 focus:ring-green-300">
+                        <i data-lucide="camera" class="w-6 h-6 mr-3"></i>
+                        Scan QR & Pay Now
+                    </button>
+                </div>
+            </section>
+
+            <!-- 2. Suggestion Box Tab (WhatsApp Integration) -->
+            <section id="suggestion" class="tab-content hidden">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Submit a Suggestion</h2>
+
+                <form id="suggestion-form" onsubmit="sendWhatsAppSuggestion(event)" class="space-y-6">
+                    <div>
+                        <label for="suggestion-text" class="block text-sm font-medium text-gray-700 mb-2">
+                            Your Suggestion/Feedback:
+                        </label>
+                        <textarea id="suggestion-text" rows="6" 
+                                  class="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary transition duration-150" 
+                                  placeholder="Type your suggestion for improvement, maintenance request, or general feedback here..." 
+                                  required></textarea>
+                        <p class="mt-2 text-xs text-gray-500">Your message will be pre-filled in WhatsApp. You must manually press 'Send' in the WhatsApp app.</p>
+                    </div>
+
+                    <button type="submit" 
+                            class="flex items-center justify-center w-full px-6 py-3 bg-secondary text-white font-medium text-lg rounded-xl shadow-lg hover:bg-orange-600 transition duration-200 ease-in-out transform hover:scale-[1.01] active:scale-95 focus:outline-none focus:ring-4 focus:ring-orange-300">
+                        <i data-lucide="whatsapp" class="w-6 h-6 mr-3 fill-white stroke-white"></i>
+                        Submit & Open WhatsApp
+                    </button>
+
+                    <div id="suggestion-status" class="hidden p-4 rounded-lg text-base text-blue-700 bg-blue-100 border-l-4 border-blue-500" role="alert">
+                        <p class="font-medium">👍 Opening WhatsApp!</p>
+                        <p class="text-sm mt-1">Please confirm and send the pre-filled message in the opened WhatsApp window.</p>
+                    </div>
+                </form>
+            </section>
+
+            <!-- 3. Society Map Tab (PDF Embed) -->
+            <section id="map" class="tab-content hidden">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Society Layout Map (PDF)</h2>
+                
+                <div class="bg-gray-100 p-2 rounded-lg shadow-inner">
+                    <p class="text-sm text-gray-600 mb-4">
+                        The official society map is embedded below. Scroll and zoom within the frame to view details.
+                        <span class="font-bold text-red-500">[NOTE: Placeholder PDF used. Replace the iframe `src` with your actual PDF link.]</span>
+                    </p>
+                    
+                    <div class="h-[600px] w-full border-4 border-gray-300 rounded-xl overflow-hidden shadow-xl">
+                        <!-- Placeholder PDF URL: This MUST be replaced with your actual PDF file link -->
+                        <iframe src="DREAM CITY.pdf" 
+                                width="100%" height="100%" 
+                                title="Society Map PDF Embed"
+                                class="border-0">
+                            Your browser does not support PDFs. You can <a href="" target="_blank" class="text-primary hover:underline">download the PDF here</a>.
+                        </iframe>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        // Placeholder phone number for the Society Admin/Group
+        // NOTE: Use international format (Country Code + Number, no spaces or dashes)
+        const SOCIETY_WA_NUMBER = "918968836743"; 
+
+        /**
+         * Switches the active content tab and updates the button styling.
+         * @param {string} tabId The ID of the tab content to show (e.g., 'payment').
+         */
+        function showTab(tabId) {
+            // Hide all tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+
+            // Deactivate all tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // Show the selected tab content
+            document.getElementById(tabId).classList.remove('hidden');
+
+            // Activate the selected tab button
+            document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active');
+        }
+
+        /**
+         * Simulates a QR scan and payment process.
+         */
+        function simulateQrScan() {
+            const statusBox = document.getElementById('payment-status');
+            
+            // 1. Show processing message (optional)
+            // statusBox.innerHTML = '<p class="font-medium">⏳ Processing Payment...</p>';
+            // statusBox.classList.remove('hidden', 'bg-green-100', 'border-green-500', 'text-green-700');
+            // statusBox.classList.add('bg-blue-100', 'border-blue-500', 'text-blue-700');
+
+            // 2. Simulate success after a brief delay
+            setTimeout(() => {
+                statusBox.innerHTML = '<p class="font-medium">✅ Payment Success!</p><p class="text-sm mt-1">Maintenance fee successfully processed. A confirmation SMS/Email has been sent.</p>';
+                
+                // Ensure it is styled as success
+                statusBox.classList.remove('hidden', 'bg-blue-100', 'border-blue-500', 'text-blue-700');
+                statusBox.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+            }, 100); // Quick simulation
+        }
+
+        /**
+         * Generates the WhatsApp link with the suggestion text and opens it.
+         * @param {Event} event The form submission event.
+         */
+        function sendWhatsAppSuggestion(event) {
+            event.preventDefault(); // Stop default form submission
+            
+            const suggestionTextarea = document.getElementById('suggestion-text');
+            const suggestion = suggestionTextarea.value.trim();
+            const statusBox = document.getElementById('suggestion-status');
+            
+            if (suggestion.length === 0) {
+                // Show a brief message if the textarea is empty
+                statusBox.innerHTML = '<p class="font-medium text-red-700">❌ Error: Please enter a suggestion.</p>';
+                statusBox.classList.remove('hidden', 'bg-blue-100', 'border-blue-500', 'text-blue-700');
+                statusBox.classList.add('bg-red-100', 'border-red-500', 'text-red-700');
+                return;
+            }
+            
+            // Template message for the WhatsApp link
+            const template = `Suggestion from Resident:\n\n---\n${suggestion}\n---`;
+            
+            // Encode the message for use in a URL
+            const encodedMessage = encodeURIComponent(template);
+            
+            // Construct the WhatsApp API URL
+            const whatsappUrl = `https://wa.me/${SOCIETY_WA_NUMBER}?text=${encodedMessage}`;
+            
+            // Open the link in a new tab
+            window.open(whatsappUrl, '_blank');
+            
+            // Display success message and clear the form
+            statusBox.innerHTML = '<p class="font-medium">👍 Opening WhatsApp!</p><p class="text-sm mt-1">Please confirm and send the pre-filled message in the opened WhatsApp window.</p>';
+            statusBox.classList.remove('hidden', 'bg-red-100', 'border-red-500', 'text-red-700');
+            statusBox.classList.add('bg-blue-100', 'border-blue-500', 'text-blue-700');
+            
+            // Reset the form after successful action
+            suggestionTextarea.value = '';
+        }
+
+        // Initialize Lucide icons on window load and set the default tab
+        window.onload = function() {
+            lucide.createIcons();
+            showTab('payment'); // Start on the Payment tab
+        }
+
+    </script>
+</body>
+</html>
