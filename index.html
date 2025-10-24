@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Lucide icons for a modern look -->
     <script src="https://unpkg.com/lucide@latest"></script>
+     <!-- jquery liberary  -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <style>
         /* Custom styles for Inter font and general body look */
         body {
@@ -90,29 +92,68 @@
             <section id="suggestion" class="tab-content hidden">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-6 border-b pb-2">Submit a Suggestion</h2>
 
-                <form id="suggestion-form" onsubmit="sendWhatsAppSuggestion(event)" class="space-y-6">
-                    <div>
-                        <label for="suggestion-text" class="block text-sm font-medium text-gray-700 mb-2">
-                            Your Suggestion/Feedback:
-                        </label>
-                        <textarea id="suggestion-text" rows="6" 
-                                  class="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary transition duration-150" 
-                                  placeholder="Type your suggestion for improvement, maintenance request, or general feedback here..." 
-                                  required></textarea>
-                        <p class="mt-2 text-xs text-gray-500">Your message will be pre-filled in WhatsApp. You must manually press 'Send' in the WhatsApp app.</p>
-                    </div>
+               <!-- Email Configuration -->
+    <script>
+        // !!! IMPORTANT: Configure the Recipient Email Here !!!
+        const ADMIN_EMAIL = "abc@gmail.com"; 
+        const EMAIL_SUBJECT = "Dream City Improvement Suggestion";
+    </script>
 
-                    <button type="submit" 
-                            class="flex items-center justify-center w-full px-6 py-3 bg-secondary text-white font-medium text-lg rounded-xl shadow-lg hover:bg-purple-600 transition duration-200 ease-in-out transform hover:scale-[1.01] active:scale-95 focus:outline-none focus:ring-4 focus:ring-purple-300">
-                        <i data-lucide="whatsapp" class="w-6 h-6 mr-3 fill-white stroke-white"></i>
-                        Submit
-                    </button>
+    <!-- Main Submission Card -->
+    <div class="w-full max-w-xl bg-white shadow-2xl rounded-xl p-6 md:p-10 border border-gray-100">
+        <h1 class="text-3xl font-extrabold text-gray-800 mb-2">Community Suggestion Box (Email Client Required)</h1>
+        <p class="text-gray-500 mb-6">
+            Your submission will open in your default email application. You must manually click **Send** in that application.
+        </p>
 
-                    <div id="suggestion-status" class="hidden p-4 rounded-lg text-base text-blue-700 bg-blue-100 border-l-4 border-blue-500" role="alert">
-                        <p class="font-medium">👍 Opening WhatsApp!</p>
-                        <p class="text-sm mt-1">Please confirm and send the pre-filled message in the opened WhatsApp window.</p>
-                    </div>
-                </form>
+        <!-- Notification Area for success/error messages -->
+        <div id="notification-area" class="mb-6 hidden"></div>
+
+        <!-- The Submission Form -->
+        <form id="suggestionForm">
+            
+            <!-- House No. Column -->
+            <div class="mb-4">
+                <label for="house_no" class="block text-sm font-medium text-gray-700 mb-2">
+                    House No. (e.g., 101-B)
+                </label>
+                <input
+                    type="text"
+                    id="house_no"
+                    name="houseNo" 
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150 shadow-sm"
+                    placeholder="Enter your house or unit number"
+                >
+            </div>
+
+            <!-- Suggestion Area Column -->
+            <div class="mb-6">
+                <label for="suggestion_area" class="block text-sm font-medium text-gray-700 mb-2">
+                    Your Suggestion/Feedback
+                </label>
+                <textarea
+                    id="suggestion_area"
+                    name="suggestionText" 
+                    rows="6"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150 shadow-sm"
+                    placeholder="Describe your suggestion here (required)"
+                ></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <div>
+                <button
+                    type="submit"
+                    id="submitButton"
+                    class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-lg font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200 transform hover:scale-[1.01]"
+                >
+                    Prepare Email
+                </button>
+            </div>
+        </form>
+    </div>
             </section>
 
             <!-- 3. Society Map Tab (PDF Embed) -->
@@ -130,7 +171,7 @@
     <script>
         // Placeholder phone number for the Society Admin/Group
         // NOTE: Use international format (Country Code + Number, no spaces or dashes)
-        const SOCIETY_WA_NUMBER = "918968836743"; 
+        const SOCIETY_WA_NUMBER = "91xxxxxxxxxx"; 
 
         /**
          * Switches the active content tab and updates the button styling.
@@ -199,9 +240,78 @@
             showTab('payment'); // Start on the Payment tab
         }
 
+
+           document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('suggestionForm');
+            const notificationArea = document.getElementById('notification-area');
+
+            // Helper function to encode text for a URL
+            const urlEncode = (str) => encodeURIComponent(str).replace(/%20/g, '+');
+
+            // Helper function to show a message
+            function showMessage(type, title, text) {
+                notificationArea.innerHTML = '';
+                notificationArea.classList.remove('hidden');
+                
+                let bgColor = type === 'success' ? 'bg-green-100' : 'bg-red-100';
+                let borderColor = type === 'success' ? 'border-green-400' : 'border-red-400';
+                let textColor = type === 'success' ? 'text-green-700' : 'text-red-700';
+
+                notificationArea.className = `px-4 py-3 rounded-md mb-6 ${bgColor} border ${borderColor}`;
+
+                const message = document.createElement('div');
+                message.innerHTML = `<h3 class="font-bold mb-1 ${textColor}">${title}</h3><p class="text-sm ${textColor}">${text}</p>`;
+                notificationArea.appendChild(message);
+            }
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+
+                const houseNo = document.getElementById('house_no').value.trim();
+                const suggestionText = document.getElementById('suggestion_area').value.trim();
+
+                if (!houseNo || !suggestionText) {
+                    showMessage('error', 'Error!', 'Both the house number and suggestion fields are required.');
+                    return;
+                }
+
+                // 1. Construct the email body text
+                const bodyContent = `
+House Number: ${houseNo}
+
+Suggestion Details:
+====================================
+${suggestionText}
+====================================
+
+NOTE: This message was generated by the community suggestion form.
+`;
+                
+                // 2. Build the mailto link
+                // Use double line breaks (%0D%0A%0D%0A) to ensure readability in the email body
+                const mailtoLink = 
+                    `mailto:${ADMIN_EMAIL}` +
+                    `?subject=${urlEncode(EMAIL_SUBJECT)}` +
+                    `&body=${urlEncode(bodyContent)}`;
+
+                // 3. Open the user's email client
+                window.location.href = mailtoLink;
+
+                // 4. Show success and prompt the user
+                showMessage('success', 'Email Client Opened!', 'Please check your default email program (like Outlook or Gmail) to manually send the prepared message. The form will now reset.');
+                
+                // 5. Reset the form after a short delay
+                setTimeout(() => {
+                    form.reset();
+                }, 100); 
+            });
+        });
+
+
     </script>
 </body>
 </html>
+
 
 
 
